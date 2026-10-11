@@ -20,6 +20,8 @@ Open `http://localhost:5000` and select **Enable camera**. Camera access require
 3. Render reads `render.yaml`, installs `requirements.txt`, and starts the Flask app with Gunicorn.
 4. Open the generated `https://…onrender.com` URL and allow camera access.
 
+The `.python-version` file pins the service to Python 3.11.11. MediaPipe 0.10.21 does not publish a compatible package for Render's default Python 3.14 runtime.
+
 The `render.yaml` configuration runs a single Python worker because the MediaPipe hand detector is shared and synchronized. The free Render service may sleep when idle and take a little time to wake up.
 
 ## Desktop app
