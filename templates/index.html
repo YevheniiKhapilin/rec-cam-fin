@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#090b18">
   <title>Жест / Материя — управление частицами рукой</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='scene-keys.css') }}">
 </head>
 <body>
   <main class="app-shell">
@@ -31,7 +32,7 @@
         </div>
         <button id="camera-button" class="camera-button"><span class="camera-icon">◉</span><span id="camera-button-label">ВКЛЮЧИТЬ КАМЕРУ</span><span class="button-arrow">↗</span></button>
         <div class="help-text" id="help-text">Камера остаётся в этом браузере. Кадры отправляются приложению Python для распознавания жестов.</div>
-        <div class="shortcut"><span>БЕЗ КАМЕРЫ?</span><div><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd><kbd>4</kbd> выбор сцены</div></div>
+        <div class="shortcut"><span>БЕЗ КАМЕРЫ?</span><div class="scene-shortcuts"><button type="button" class="scene-key" data-gesture="1" aria-label="Космос">1</button><button type="button" class="scene-key" data-gesture="2" aria-label="Сердце">2</button><button type="button" class="scene-key" data-gesture="3" aria-label="Послание">3</button><button type="button" class="scene-key" data-gesture="4" aria-label="Поцелуй">4</button><span class="shortcut-caption">выбрать сцену</span></div></div>
       </aside>
     </div>
     <footer><span>ЖЕСТ / МАТЕРИЯ · PYTHON + MEDIAPIPE</span><span>КАМЕРА УСТРОЙСТВА · ЖИВЫЕ ЧАСТИЦЫ</span></footer>

@@ -72,8 +72,8 @@
     for (let i = 0; i < COUNT; i++) {
       const [x, y] = pixels[Math.floor(random() * pixels.length)];
       const offset = i * 3;
-      points[offset] = (x - bitmap.width / 2) / 115;
-      points[offset + 1] = -(y - bitmap.height / 2) / 115;
+      points[offset] = (x - bitmap.width / 2) / 200;
+      points[offset + 1] = -(y - bitmap.height / 2) / 200;
       points[offset + 2] = (random() - .5) * .12;
     }
     return points;
