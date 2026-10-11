@@ -1,39 +1,40 @@
 <!doctype html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#090b18">
-  <title>Gesture / Matter — Hand Particle Tool</title>
+  <title>Жест / Материя — управление частицами рукой</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
   <main class="app-shell">
     <header class="topbar">
-      <a class="brand" href="/" aria-label="Gesture Matter home"><span class="brand-mark"></span><span>GESTURE / MATTER</span></a>
-      <div class="live-status"><span class="status-light" id="status-light"></span><span id="camera-status">CAMERA OFF</span></div>
+      <a class="brand" href="/" aria-label="На главную"><span class="brand-mark"></span><span>ЖЕСТ / МАТЕРИЯ</span></a>
+      <div class="live-status"><span class="status-light" id="status-light"></span><span id="camera-status">КАМЕРА ВЫКЛЮЧЕНА</span></div>
     </header>
     <div class="layout">
-      <section class="visualizer" aria-label="Particle visualizer">
-        <canvas id="particles" aria-label="Animated 3-D particle visualization"></canvas>
-        <div class="scene-heading"><span>PARTICLE OUTPUT</span><strong id="scene-title">SPACE FIELD</strong></div>
-        <div class="scene-index"><strong id="finger-number">01</strong><span id="finger-label">ONE FINGER</span></div>
+      <section class="visualizer" aria-label="Визуализация частиц">
+        <canvas id="particles" aria-label="Анимированная трёхмерная визуализация частиц"></canvas>
+        <div class="scene-heading"><span>ВИЗУАЛИЗАЦИЯ ЧАСТИЦ</span><strong id="scene-title">КОСМИЧЕСКОЕ ПОЛЕ</strong></div>
+        <div class="scene-index"><strong id="finger-number">01</strong><span id="finger-label">ОДИН ПАЛЕЦ</span></div>
         <div class="scanline"></div>
       </section>
       <aside class="controls">
-        <div class="control-intro"><p class="overline">CAMERA-DRIVEN VISUALIZER</p><h1>Your hand.<br><span>Your universe.</span></h1><p class="description">Show one, two, or three fingers to shape a living field of particles.</p></div>
-        <div class="presets" role="group" aria-label="Gesture presets">
-          <p class="overline">SCENE PRESETS</p>
-          <button class="preset active" data-gesture="1"><span class="preset-number">01</span><span class="preset-info"><strong>Space</strong><small>One finger</small></span><span class="swatch space-swatch"></span></button>
-          <button class="preset" data-gesture="2"><span class="preset-number">02</span><span class="preset-info"><strong>Heart</strong><small>Two fingers</small></span><span class="swatch heart-swatch"></span></button>
-          <button class="preset" data-gesture="3"><span class="preset-number">03</span><span class="preset-info"><strong>Message</strong><small>Three fingers</small></span><span class="swatch message-swatch"></span></button>
+        <div class="control-intro"><p class="overline">УПРАВЛЕНИЕ ЖЕСТАМИ</p><h1>Твоя рука.<br><span>Твоя вселенная.</span></h1><p class="description">Покажи один, два или три пальца, чтобы менять форму частиц.</p></div>
+        <div class="presets" role="group" aria-label="Сцены по жестам">
+          <p class="overline">СЦЕНЫ</p>
+          <button class="preset active" data-gesture="1"><span class="preset-number">01</span><span class="preset-info"><strong>Космос</strong><small>Один палец</small></span><span class="swatch space-swatch"></span></button>
+          <button class="preset" data-gesture="2"><span class="preset-number">02</span><span class="preset-info"><strong>Сердце</strong><small>Два пальца</small></span><span class="swatch heart-swatch"></span></button>
+          <button class="preset" data-gesture="3"><span class="preset-number">03</span><span class="preset-info"><strong>Послание</strong><small>Три пальца</small></span><span class="swatch message-swatch"></span></button>
+          <button class="preset" data-gesture="4"><span class="preset-number">04</span><span class="preset-info"><strong>Поцелуй</strong><small>Четыре пальца</small></span><span class="swatch heart-swatch"></span></button>
         </div>
-        <button id="camera-button" class="camera-button"><span class="camera-icon">◉</span><span id="camera-button-label">ENABLE CAMERA</span><span class="button-arrow">↗</span></button>
-        <div class="help-text" id="help-text">Your camera stays in this browser. Frames are sent to the Python app for gesture detection.</div>
-        <div class="shortcut"><span>NO CAMERA?</span><div><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> preview scenes</div></div>
+        <button id="camera-button" class="camera-button"><span class="camera-icon">◉</span><span id="camera-button-label">ВКЛЮЧИТЬ КАМЕРУ</span><span class="button-arrow">↗</span></button>
+        <div class="help-text" id="help-text">Камера остаётся в этом браузере. Кадры отправляются приложению Python для распознавания жестов.</div>
+        <div class="shortcut"><span>БЕЗ КАМЕРЫ?</span><div><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd><kbd>4</kbd> выбор сцены</div></div>
       </aside>
     </div>
-    <footer><span>GESTURE MATTER · PYTHON + MEDIAPIPE</span><span>LOCAL CAMERA · LIVE PARTICLES</span></footer>
+    <footer><span>ЖЕСТ / МАТЕРИЯ · PYTHON + MEDIAPIPE</span><span>КАМЕРА УСТРОЙСТВА · ЖИВЫЕ ЧАСТИЦЫ</span></footer>
   </main>
   <video id="camera" autoplay playsinline muted></video>
   <script src="{{ url_for('static', filename='app.js') }}" defer></script>

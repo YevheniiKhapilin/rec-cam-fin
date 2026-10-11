@@ -32,7 +32,7 @@ def count_fingers(landmarks) -> int:
     tips = (8, 12, 16, 20)
     pips = (6, 10, 14, 18)
     count = sum(landmarks[tip].y < landmarks[pip].y for tip, pip in zip(tips, pips))
-    return min(3, count)
+    return min(4, count)
 
 
 @app.get("/")
