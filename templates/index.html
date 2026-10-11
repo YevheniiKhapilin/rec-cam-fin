@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090b18">
+  <title>Gesture / Matter — Hand Particle Tool</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="Gesture Matter home"><span class="brand-mark"></span><span>GESTURE / MATTER</span></a>
+      <div class="live-status"><span class="status-light" id="status-light"></span><span id="camera-status">CAMERA OFF</span></div>
+    </header>
+    <div class="layout">
+      <section class="visualizer" aria-label="Particle visualizer">
+        <canvas id="particles" aria-label="Animated 3-D particle visualization"></canvas>
+        <div class="scene-heading"><span>PARTICLE OUTPUT</span><strong id="scene-title">SPACE FIELD</strong></div>
+        <div class="scene-index"><strong id="finger-number">01</strong><span id="finger-label">ONE FINGER</span></div>
+        <div class="scanline"></div>
+      </section>
+      <aside class="controls">
+        <div class="control-intro"><p class="overline">CAMERA-DRIVEN VISUALIZER</p><h1>Your hand.<br><span>Your universe.</span></h1><p class="description">Show one, two, or three fingers to shape a living field of particles.</p></div>
+        <div class="presets" role="group" aria-label="Gesture presets">
+          <p class="overline">SCENE PRESETS</p>
+          <button class="preset active" data-gesture="1"><span class="preset-number">01</span><span class="preset-info"><strong>Space</strong><small>One finger</small></span><span class="swatch space-swatch"></span></button>
+          <button class="preset" data-gesture="2"><span class="preset-number">02</span><span class="preset-info"><strong>Heart</strong><small>Two fingers</small></span><span class="swatch heart-swatch"></span></button>
+          <button class="preset" data-gesture="3"><span class="preset-number">03</span><span class="preset-info"><strong>Message</strong><small>Three fingers</small></span><span class="swatch message-swatch"></span></button>
+        </div>
+        <button id="camera-button" class="camera-button"><span class="camera-icon">◉</span><span id="camera-button-label">ENABLE CAMERA</span><span class="button-arrow">↗</span></button>
+        <div class="help-text" id="help-text">Your camera stays in this browser. Frames are sent to the Python app for gesture detection.</div>
+        <div class="shortcut"><span>NO CAMERA?</span><div><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> preview scenes</div></div>
+      </aside>
+    </div>
+    <footer><span>GESTURE MATTER · PYTHON + MEDIAPIPE</span><span>LOCAL CAMERA · LIVE PARTICLES</span></footer>
+  </main>
+  <video id="camera" autoplay playsinline muted></video>
+  <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+</body>
+</html>
