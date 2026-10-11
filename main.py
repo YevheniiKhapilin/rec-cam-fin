@@ -8,7 +8,9 @@ from __future__ import annotations
 import math
 import random
 import sys
+import threading
 from collections import deque
+from functools import lru_cache
 from pathlib import Path
 from typing import Iterable
 
@@ -79,8 +81,17 @@ def raised_fingers(hand_landmarks: Iterable[object]) -> int:
 
 
 def draw_label(screen: pygame.Surface, text: str, position: tuple[int, int], size: int, color: tuple[int, int, int]) -> None:
-    font = pygame.font.SysFont("Arial", size)
-    screen.blit(font.render(text, True, color), position)
+    screen.blit(get_label_surface(text, size, color), position)
+
+
+@lru_cache(maxsize=16)
+def get_font(size: int) -> pygame.font.Font:
+    return pygame.font.SysFont("Arial", size)
+
+
+@lru_cache(maxsize=128)
+def get_label_surface(text: str, size: int, color: tuple[int, int, int]) -> pygame.Surface:
+    return get_font(size).render(text, True, color)
 
 
 def render_particles(screen: pygame.Surface, projected: np.ndarray, scale: np.ndarray, particle_colors: np.ndarray, left: int, top: int, right: int, bottom: int) -> None:
@@ -95,7 +106,6 @@ def render_particles(screen: pygame.Surface, projected: np.ndarray, scale: np.nd
         return
     pixels = pygame.surfarray.pixels3d(screen)
     pixels[points[:, 0], points[:, 1]] = particle_colors[visible]
-    pygame.surfarray.blit_array(screen, pixels)
     del pixels
 
 
@@ -160,7 +170,32 @@ def main() -> None:
     camera = cv2.VideoCapture(0)
     camera.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
     camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
+    camera.set(cv2.CAP_PROP_FPS, 15)
     hands = mp.solutions.hands.Hands(static_image_mode=False, max_num_hands=1, min_detection_confidence=0.65, min_tracking_confidence=0.55)
+    stop_tracking = threading.Event()
+    gesture_lock = threading.Lock()
+    detected_gesture: list[int | None] = [None]
+
+    def track_hand() -> None:
+        inference_frame = 0
+        while not stop_tracking.is_set():
+            ok, frame = camera.read()
+            if not ok:
+                stop_tracking.wait(0.05)
+                continue
+            inference_frame += 1
+            if inference_frame % 3:
+                continue
+            result = hands.process(cv2.cvtColor(cv2.flip(frame, 1), cv2.COLOR_BGR2RGB))
+            if result.multi_hand_landmarks:
+                history.append(raised_fingers(result.multi_hand_landmarks[0].landmark))
+                if len(history) >= 4 and len(set(history)) == 1 and history[-1] in (1, 2, 3, 4):
+                    with gesture_lock:
+                        detected_gesture[0] = history[-1]
+
+    tracker_thread = threading.Thread(target=track_hand, daemon=True)
+    tracker_thread.start()
+    delta = np.empty_like(particles)
     frame_number = 0
     running = True
 
@@ -174,16 +209,15 @@ def main() -> None:
                 elif event.key == pygame.K_ESCAPE:
                     running = False
 
-        ok, frame = camera.read()
-        if ok and frame_number % 3 == 0:
-            result = hands.process(cv2.cvtColor(cv2.flip(frame, 1), cv2.COLOR_BGR2RGB))
-            if result.multi_hand_landmarks:
-                history.append(raised_fingers(result.multi_hand_landmarks[0].landmark))
-                if len(history) >= 4 and len(set(history)) == 1 and history[-1] in (1, 2, 3, 4):
-                    gesture = history[-1]
+        with gesture_lock:
+            if detected_gesture[0] is not None:
+                gesture = detected_gesture[0]
+                detected_gesture[0] = None
 
         frame_number += 1
-        particles += (targets[gesture] - particles) * 0.12
+        np.subtract(targets[gesture], particles, out=delta)
+        delta *= 0.12
+        particles += delta
         rotation += 0.006
         screen.fill((8, 10, 22))
         width, height = screen.get_size()
@@ -201,10 +235,18 @@ def main() -> None:
 
         pygame.draw.line(screen, (42, 46, 82), (width - 330, 28), (width - 330, height - 28), 1)
         draw_label(screen, "ЖЕСТ / МАТЕРИЯ", (55, 48), 15, (244, 241, 236))
-        draw_label(screen, "КАМЕРА ВКЛЮЧЕНА" if ok else "КАМЕРА НЕДОСТУПНА", (width - 250, 50), 11, (145, 239, 208) if ok else (255, 112, 130))
+        camera_ready = camera.isOpened()
+        draw_label(screen, "КАМЕРА ВКЛЮЧЕНА" if camera_ready else "КАМЕРА НЕДОСТУПНА", (width - 250, 50), 11, (145, 239, 208) if camera_ready else (255, 112, 130))
         draw_label(screen, "ВИЗУАЛИЗАЦИЯ", (55, 92), 11, (141, 146, 178))
         labels = {1: "КОСМИЧЕСКОЕ ПОЛЕ", 2: "СИГНАЛ СЕРДЦА", 3: "Я ЛЮБЛЮ ТЕБЯ, ЛЕСЮША", 4: "ПОЦЕЛУЙЧИК ТЕБЕ"}
+        descriptions = {
+            1: "Частицы медленно вращаются в глубоком космическом поле.",
+            2: "Красные частицы собираются в объёмное сердце.",
+            3: "Светлая надпись слегка покачивается и остаётся читаемой.",
+            4: "Надпись движется мягко, а поцелуй вращается среди искр.",
+        }
         draw_label(screen, labels[gesture], (55, 116), 17, (245, 245, 250))
+        draw_label(screen, descriptions[gesture], (55, 145), 11, (141, 146, 178))
         draw_label(screen, "ЖЕСТЫ", (width - 285, 92), 11, (141, 146, 178))
         draw_label(screen, "[1]  ОДИН ПАЛЕЦ", (width - 285, 140), 13, (255, 255, 255) if gesture == 1 else (130, 136, 163))
         draw_label(screen, "[2]  ДВА ПАЛЬЦА", (width - 285, 180), 13, (255, 255, 255) if gesture == 2 else (130, 136, 163))
@@ -216,8 +258,10 @@ def main() -> None:
         pygame.display.flip()
         clock.tick(60)
 
-    hands.close()
+    stop_tracking.set()
     camera.release()
+    tracker_thread.join(timeout=1)
+    hands.close()
     pygame.quit()
     sys.exit(0)
 
